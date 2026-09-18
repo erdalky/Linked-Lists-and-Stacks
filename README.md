@@ -1,19 +1,92 @@
-# Custom Min-Heap & Greedy Algorithms
+# Linked Lists, Stacks & Queues
 
-This repository contains a Java-based implementation of a custom Min-Heap data structure, built entirely from scratch to solve complex optimization problems using Greedy Algorithms. 
+Three classic problems solved with linked structures built from scratch in Java.
+No `java.util` collections are used — every queue, stack, and list in this
+repository is implemented by hand so the underlying mechanics stay visible.
 
-The project demonstrates a deep understanding of core data structures by explicitly avoiding Java's built-in `PriorityQueue` or any standard collection-based heaps.
+I/O goes through Princeton's `algs4` standard library.
+
+---
 
 ## 🚀 Problems Solved
 
-* **Cookie Sweetness Optimizer:** Calculates the minimum number of mixing operations required to ensure all elements meet a specific sweetness threshold `k`. It utilizes a custom `LongMinHeap` to repeatedly combine the two least sweet elements using a specific mathematical formula.
-* **Pizza Shop Scheduler:** Minimizes the average waiting time for customers by intelligently scheduling orders based on their cook time rather than a standard first-come-first-served basis. It relies on a specialized `PizzaJobMinHeap` to process custom `PizzaJob` objects.
+### 🔹 Josephus Problem
+
+`N` people stand in a circle and every `M`-th person is eliminated until nobody
+is left. The program prints the elimination order.
+
+Implemented with a **custom linked queue** (`LinkedQueue`) holding `IntNode`
+elements. Each round rotates the circle by dequeuing and re-enqueuing `M - 1`
+people, then dequeues the `M`-th and prints it. Rotating the queue rather than
+indexing a list is what makes the circular structure fall out naturally.
+
+Runs in O(N · M) time and O(N) space.
+
+```bash
+java Josephus 7 2
+# 1 3 5 0 4 2 6
+```
+
+### 🔹 Balanced Parentheses
+
+Checks whether a string of brackets is correctly balanced, supporting `()`,
+`[]`, and `{}`. Any other character is ignored.
+
+Implemented with a **resizing array-backed stack** (`ResizingCharStack`).
+Opening brackets are pushed; a closing bracket pops the top and fails if the
+pair doesn't match. A string is balanced only if nothing is left on the stack
+at the end, which catches unclosed openers as well as mismatches.
+
+The stack doubles its capacity when full and halves it when it drops to a
+quarter, so the array never sits mostly empty and push stays O(1) amortized.
+
+```bash
+echo "{[()]}" | java Parentheses
+# true
+```
+
+### 🔹 Remove Duplicates from a Sorted List
+
+Removes repeated values from a singly linked list, reading several test cases
+in one run.
+
+Implemented with a **hand-written linked list** (`IntLinkedList` over
+`IntNode`) supporting append, print, and in-place duplicate removal. The removal
+walks the list once and unlinks a node whenever it equals its successor, so it
+targets *consecutive* duplicates and assumes the input is sorted. Nothing is
+copied — the original nodes are relinked in place.
+
+Runs in O(n) time and O(1) extra space.
+
+```bash
+# first line: number of test cases, then length + values per case
+echo "1
+6
+1 1 2 3 3 4" | java RemoveDuplicates
+# 1 2 3 4
+```
+
+---
 
 ## 🧠 Technical Highlights
 
-* **Native Implementation:** The Min-Heap is implemented dynamically via a 1-indexed array representation, utilizing internal `swim()` and `sink()` operations.
-* **Memory Management:** Features automatic array resizing (doubling when full, halving when a quarter full) to ensure optimal space complexity.
-* **Object-Oriented Design:** Uses inheritance with an `AbstractMinHeap` base class to create specialized heaps for different data types.
-* **Strict I/O Handling:** Processes datasets efficiently using Princeton's `algs4` standard I/O library.
+- **No built-in collections.** `Queue`, `Stack`, and `LinkedList` are all
+  implemented from scratch rather than imported.
+- **Amortized resizing.** The character stack grows by doubling and shrinks by
+  halving, keeping memory proportional to actual use.
+- **In-place list surgery.** Duplicate removal relinks existing nodes instead of
+  allocating a new list.
+- **Defensive edge cases.** Queue and stack underflow throw explicit exceptions;
+  empty inputs and invalid arguments are handled rather than left to crash.
 
+---
 
+## 🛠️ Build & Run
+
+Requires Java 17+ and the `algs4` library on the classpath.
+
+```bash
+./gradlew build
+```
+
+Each class has its own `main`, so run whichever problem you want directly.
